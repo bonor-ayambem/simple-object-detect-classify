@@ -1,6 +1,5 @@
 # Modified from source
 # # Source - Adam Czajka, Jin Huang, September 2019
-
 import cv2
 import numpy as np
 from skimage import measure
@@ -32,16 +31,33 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # *** Here is a good place to apply morphological operations
+# definition of a kernel (a.k.a. structuring element):
+kernel = np.ones((5, 5),np.uint8)
+# one iteration of morphological erosion:
+sample_res = cv2.dilate(binary_image, kernel, iterations = 3)
+# sample_res = cv2.erode(sample_res, np.ones((5, 5),np.uint8), iterations = 1)
+# morphological closing:
+# sample_res = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=2)
+# one iteration of morphological dilation:
+# kernel = np.ones((3, 3),np.uint8)
+sample_res = cv2.erode(sample_res, kernel, iterations = 6)
+# morphological opening:
+sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_OPEN, kernel, iterations=2)
+sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8), iterations=1)
 
 
+# kernel = np.ones((5, 5),np.uint8)
+# # one iteration of morphological erosion:
+# sample_res = cv2.erode(binary_image, kernel, iterations = 2)
+# sample_res = cv2.dilate(sample_res, kernel, iterations = 5)
 
-sample_small = cv2.resize(binary_image, (640, 480))
+sample_small = cv2.resize(sample_res, (640, 480))
 cv2.imshow('Image after morphological operations',sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # Find connected pixels and groupd them into objects
-labels = measure.label(binary_image, 4)
+labels = measure.label(sample_res, 4)
 
 # Calculate features for each object; since we want to differentiate
 # between circular and oval shapes, the major and minor axes may help; we
@@ -63,8 +79,7 @@ plt.ylabel("Count")
 plt.show()
 
 # *** Select a proper threshold
-fThr = 0
-
+fThr = 1.5
 
 
 # It's time to classify, count and display the objects
