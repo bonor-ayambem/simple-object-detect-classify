@@ -15,7 +15,7 @@ plt.plot()
 # print(matplotlib.get_backend())
 
 # Read the image as grayscale
-sample = cv2.imread('data/breakfast1.png', cv2.IMREAD_GRAYSCALE)
+sample = cv2.imread('data/pills.png', cv2.IMREAD_GRAYSCALE)
 
 sample_small = cv2.resize(sample, (640, 480))
 cv2.imshow('Grey scale image',sample_small)
@@ -31,20 +31,20 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # *** Here is a good place to apply morphological operations
-# definition of a kernel (a.k.a. structuring element):
-kernel = np.ones((5, 5),np.uint8)
-# one iteration of morphological erosion:
-sample_res = cv2.dilate(binary_image, kernel, iterations = 3)
-# sample_res = cv2.erode(sample_res, np.ones((5, 5),np.uint8), iterations = 1)
-# morphological closing:
-# sample_res = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=2)
-# one iteration of morphological dilation:
-# kernel = np.ones((3, 3),np.uint8)
-sample_res = cv2.erode(sample_res, kernel, iterations = 6)
-# morphological opening:
-sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_OPEN, kernel, iterations=2)
-sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8), iterations=1)
-
+# # definition of a kernel (a.k.a. structuring element):
+# kernel = np.ones((5, 5),np.uint8)
+# # one iteration of morphological erosion:
+# sample_res = cv2.dilate(binary_image, kernel, iterations = 3)
+# # sample_res = cv2.erode(sample_res, np.ones((5, 5),np.uint8), iterations = 1)
+# # morphological closing:
+# # sample_res = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=2)
+# # one iteration of morphological dilation:
+# # kernel = np.ones((3, 3),np.uint8)
+# sample_res = cv2.erode(sample_res, kernel, iterations = 6)
+# # morphological opening:
+# sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_OPEN, kernel, iterations=2)
+# sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8), iterations=1)
+sample_res = binary_image
 
 # kernel = np.ones((5, 5),np.uint8)
 # # one iteration of morphological erosion:
