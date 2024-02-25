@@ -89,7 +89,6 @@ features = np.zeros((len(properties), 2))
 
 for i in range(0, len(properties)):
     features[i, 0] = properties[i].perimeter
-    # print(properties[i].intensity_mean)
     features[i, 1] = properties[i].intensity_mean
 
 

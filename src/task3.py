@@ -1,5 +1,6 @@
 # Modified from source
 # # Source - Adam Czajka, Jin Huang, September 2019
+
 import cv2
 import numpy as np
 from skimage import measure
@@ -12,93 +13,96 @@ if sys_pf == 'darwin':
     matplotlib.use("TKAgg")
 import matplotlib.pyplot as plt
 plt.plot()
-# print(matplotlib.get_backend())
 
-# Read the image as grayscale
-sample = cv2.imread('data/pills.png', cv2.IMREAD_GRAYSCALE)
+# Read the image into grayscale
+sample = cv2.imread('data/pills.png')
 
 sample_small = cv2.resize(sample, (640, 480))
+cv2.imshow('Original image',sample_small)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Convert the original image to HSV
+# and take H channel for further calculations
+sample_hsv = cv2.cvtColor(sample, cv2.COLOR_BGR2HSV)
+sample_h = sample_hsv[:, :, 0]
+
+# Show the H channel of the image
+sample_small = cv2.resize(sample_h, (640, 480))
+cv2.imshow('H channel of the image',sample_small)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Convert the original image to grayscale
+sample_grey = cv2.cvtColor(sample, cv2.COLOR_BGR2GRAY)
+
+# Show the grey scale image
+sample_small = cv2.resize(sample_grey, (640, 480))
 cv2.imshow('Grey scale image',sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # Binarize the image using Otsu's method
-ret1, binary_image = cv2.threshold(sample, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+ret1, binary_image = cv2.threshold(sample_grey, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
 sample_small = cv2.resize(binary_image, (640, 480))
 cv2.imshow('Image after Otsu''s thresholding',sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-# *** Here is a good place to apply morphological operations
-# # definition of a kernel (a.k.a. structuring element):
-# kernel = np.ones((5, 5),np.uint8)
-# # one iteration of morphological erosion:
-# sample_res = cv2.dilate(binary_image, kernel, iterations = 3)
-# # sample_res = cv2.erode(sample_res, np.ones((5, 5),np.uint8), iterations = 1)
-# # morphological closing:
-# # sample_res = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=2)
-# # one iteration of morphological dilation:
-# # kernel = np.ones((3, 3),np.uint8)
-# sample_res = cv2.erode(sample_res, kernel, iterations = 6)
-# # morphological opening:
-# sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_OPEN, kernel, iterations=2)
-# sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8), iterations=1)
-sample_res = binary_image
 
-# kernel = np.ones((5, 5),np.uint8)
-# # one iteration of morphological erosion:
-# sample_res = cv2.erode(binary_image, kernel, iterations = 2)
-# sample_res = cv2.dilate(sample_res, kernel, iterations = 5)
+# Find connected pixels and compose them into objects
+labels = measure.label(binary_image)
 
-sample_small = cv2.resize(sample_res, (640, 480))
-cv2.imshow('Image after morphological operations',sample_small)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-# Find connected pixels and groupd them into objects
-labels = measure.label(sample_res, connectivity=2, background=0)
-
-# Calculate features for each object; since we want to differentiate
+# Calculate features for each object;
+# For task3, since we want to differentiate
 # between circular and oval shapes, the major and minor axes may help; we
 # will use also the centroid to annotate the final result
-features = measure.regionprops(labels)
-print("I found %d objects in total." % (len(features)))
+properties = measure.regionprops(labels, sample_h)
 
-# In this task it is enough to calculate the ratio
-# between tha major and minor axes
-his = []
-for i in range(0, len(features)):
-    if features[i].minor_axis_length > 0:
-        his.append(features[i].major_axis_length / features[i].minor_axis_length)
 
-# Now we can look at the histogram to select a global threshold
-plt.hist(his)
-plt.xlabel("Ratio")
-plt.ylabel("Count")
+# *** Calculate features for each object:
+# - some geometrical feature 1 (dimension 1)
+# - some intensity/color-based feature 2 (dimension 2)
+features = np.zeros((len(properties), 2))
+
+
+for i in range(0, len(properties)):
+    features[i, 0] = properties[i].perimeter
+    features[i, 1] = properties[i].intensity_mean
+
+
+# Show our objects in the feature space
+plt.plot(features[:, 0],features[:, 1], 'ro')
+plt.xlabel('Feature 1: Perimeter')
+plt.ylabel('Feature 2: Intensity')
 plt.show()
 
-# *** Select a proper threshold
-fThr = 1.5
+
+# *** Choose the thresholds for your features
+thrF1 = 110
+thrF2 = 15
 
 
-# It's time to classify, count and display the objects
-squares = 0
-cashews = 0
+# *** It's time to classify, count and display the objects
+oval = 0
+round = 0
 
 fig, ax = plt.subplots()
-ax.imshow(sample, cmap=plt.cm.gray)
+ax.imshow(cv2.cvtColor(sample, cv2.COLOR_BGR2RGB))
 
-for i in range(0, len(his)):
-    if his[i] <= fThr:
-        squares = squares + 1
-        y, x = features[i].centroid
-        ax.plot(x, y, '.g', markersize=10)
-    else:
-        cashews = cashews + 1
-        y, x = features[i].centroid
-        ax.plot(x, y, '.b', markersize=10)
+for i in range(0, len(properties)):
+    if (features[i, 0] > thrF1 and features[i, 1] > thrF2):
+       oval = oval + 1
+       ax.plot(np.round(properties[i].centroid[1]), np.round(properties[i].centroid[0]), '.g', markersize=15)
+
+    if (features[i, 0] < thrF1 and features[i, 1] < thrF2):
+       round = round + 1
+       ax.plot(np.round(properties[i].centroid[1]), np.round(properties[i].centroid[0]), '.b', markersize=15)
+
+
 plt.show()
 
+
 # That's all! Let's display the result:
-print("I found %d squares, and %d cashew nuts." % (squares, cashews))
+print("I found %d oval pills and %d round pills." % (oval, round))

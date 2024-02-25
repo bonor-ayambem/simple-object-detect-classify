@@ -35,21 +35,10 @@ cv2.destroyAllWindows()
 kernel = np.ones((5, 5),np.uint8)
 # one iteration of morphological erosion:
 sample_res = cv2.dilate(binary_image, kernel, iterations = 3)
-# sample_res = cv2.erode(sample_res, np.ones((5, 5),np.uint8), iterations = 1)
-# morphological closing:
-# sample_res = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=2)
-# one iteration of morphological dilation:
-# kernel = np.ones((3, 3),np.uint8)
 sample_res = cv2.erode(sample_res, kernel, iterations = 6)
-# morphological opening:
 sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_OPEN, kernel, iterations=2)
 sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8), iterations=1)
 
-
-# kernel = np.ones((5, 5),np.uint8)
-# # one iteration of morphological erosion:
-# sample_res = cv2.erode(binary_image, kernel, iterations = 2)
-# sample_res = cv2.dilate(sample_res, kernel, iterations = 5)
 
 sample_small = cv2.resize(sample_res, (640, 480))
 cv2.imshow('Image after morphological operations',sample_small)
