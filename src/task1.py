@@ -18,7 +18,8 @@ plt.plot()
 sample = cv2.imread('data/breakfast1.png', cv2.IMREAD_GRAYSCALE)
 
 sample_small = cv2.resize(sample, (640, 480))
-cv2.imshow('Grey scale image',sample_small)
+cv2.imshow('Grey scale image', sample_small)
+cv2.imwrite('output/task1/greyscale.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -27,6 +28,7 @@ ret1, binary_image = cv2.threshold(sample, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_
 
 sample_small = cv2.resize(binary_image, (640, 480))
 cv2.imshow('Image after Otsu''s thresholding',sample_small)
+cv2.imwrite('output/task1/threshold.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -42,6 +44,7 @@ sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, np.ones((3, 3),np.uin
 
 sample_small = cv2.resize(sample_res, (640, 480))
 cv2.imshow('Image after morphological operations',sample_small)
+cv2.imwrite('output/task1/morphological.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -65,6 +68,7 @@ for i in range(0, len(features)):
 plt.hist(his)
 plt.xlabel("Ratio")
 plt.ylabel("Count")
+plt.savefig('output/task1/histogram.png')
 plt.show()
 
 # *** Select a proper threshold
@@ -87,6 +91,8 @@ for i in range(0, len(his)):
         cashews = cashews + 1
         y, x = features[i].centroid
         ax.plot(x, y, '.b', markersize=10)
+
+plt.savefig('output/task1/result.png')
 plt.show()
 
 # That's all! Let's display the result:

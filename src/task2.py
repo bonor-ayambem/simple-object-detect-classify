@@ -30,6 +30,7 @@ sample_h = sample_hsv[:, :, 0]
 # Show the H channel of the image
 sample_small = cv2.resize(sample_h, (640, 480))
 cv2.imshow('H channel of the image',sample_small)
+cv2.imwrite('output/task2/h-channel.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -39,6 +40,7 @@ sample_grey = cv2.cvtColor(sample, cv2.COLOR_BGR2GRAY)
 # Show the grey scale image
 sample_small = cv2.resize(sample_grey, (640, 480))
 cv2.imshow('Grey scale image',sample_small)
+cv2.imwrite('output/task2/greyscale.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -47,6 +49,7 @@ ret1, binary_image = cv2.threshold(sample_grey, 0, 255, cv2.THRESH_BINARY+cv2.TH
 
 sample_small = cv2.resize(binary_image, (640, 480))
 cv2.imshow('Image after Otsu''s thresholding',sample_small)
+cv2.imwrite('output/task2/threshold.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -67,6 +70,7 @@ sample_res = cv2.morphologyEx(sample_res, cv2.MORPH_CLOSE, kernel, iterations=4)
 
 sample_small = cv2.resize(sample_res, (640, 480))
 cv2.imshow('Image after morphological transformation',sample_small)
+cv2.imwrite('output/task2/morphological.png', sample_small)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
@@ -96,6 +100,7 @@ for i in range(0, len(properties)):
 plt.plot(features[:, 0],features[:, 1], 'ro')
 plt.xlabel('Feature 1: Perimeter')
 plt.ylabel('Feature 2: Intensity')
+plt.savefig('output/task2/feature-space.png')
 plt.show()
 
 
@@ -125,6 +130,7 @@ for i in range(0, len(properties)):
        red_circles = red_circles + 1
        ax.plot(np.round(properties[i].centroid[1]), np.round(properties[i].centroid[0]), '.r', markersize=15)
 
+plt.savefig('output/task2/result.png')
 plt.show()
 
 
